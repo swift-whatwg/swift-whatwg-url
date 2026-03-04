@@ -46,7 +46,8 @@ let package = Package(
         .package(path: "../swift-domain-standard"),
         .package(path: "../swift-rfc-4648"),
         .package(path: "../../swift-foundations/swift-ascii"),
-        .package(path: "../../swift-primitives/swift-binary-primitives")
+        .package(path: "../../swift-primitives/swift-binary-primitives"),
+        .package(path: "../../swift-primitives/swift-parser-primitives")
     ],
     targets: [
         // Core URL implementation
@@ -59,7 +60,8 @@ let package = Package(
                 .rfc5952,
                 .domainStandard,
                 .incits41986,
-                .binary
+                .binary,
+                .product(name: "Parser Primitives", package: "swift-parser-primitives")
             ]
         ),
 
