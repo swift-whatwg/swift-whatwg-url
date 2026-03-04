@@ -1,5 +1,5 @@
 //
-//  WHATWG_URL.Parse.Scheme.swift
+//  WHATWG_URL.URL.Scheme.Parse.swift
 //  swift-whatwg-url
 //
 //  WHATWG URL scheme: alpha *( alpha / digit / "+" / "-" / "." ) ":"
@@ -7,7 +7,7 @@
 
 public import Parser_Primitives
 
-extension WHATWG_URL.Parse {
+extension WHATWG_URL.URL.Scheme {
     /// Parses a URL scheme per the WHATWG URL Standard.
     ///
     /// `scheme = alpha *( alpha / digit / "+" / "-" / "." )`
@@ -15,14 +15,14 @@ extension WHATWG_URL.Parse {
     /// The scheme is terminated by `:` (0x3A) which is consumed.
     /// The returned output is the raw scheme bytes (without the colon),
     /// normalized to lowercase by the caller.
-    public struct Scheme<Input: Collection.Slice.`Protocol`>: Sendable
+    public struct Parse<Input: Collection.Slice.`Protocol`>: Sendable
     where Input: Sendable, Input.Element == UInt8 {
         @inlinable
         public init() {}
     }
 }
 
-extension WHATWG_URL.Parse.Scheme {
+extension WHATWG_URL.URL.Scheme.Parse {
     /// Raw scheme bytes (excluding the trailing colon).
     public typealias Output = Input
 
@@ -32,9 +32,9 @@ extension WHATWG_URL.Parse.Scheme {
     }
 }
 
-extension WHATWG_URL.Parse.Scheme: Parser.`Protocol` {
+extension WHATWG_URL.URL.Scheme.Parse: Parser.`Protocol` {
     public typealias ParseOutput = Output
-    public typealias Failure = WHATWG_URL.Parse.Scheme<Input>.Error
+    public typealias Failure = WHATWG_URL.URL.Scheme.Parse<Input>.Error
 
     @inlinable
     public func parse(_ input: inout Input) throws(Failure) -> Output {
