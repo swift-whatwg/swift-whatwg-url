@@ -25,7 +25,7 @@ extension WHATWG_URL {
 
 extension WHATWG_URL.PercentEncoding {
     /// Convert a nibble (0-15) to its uppercase hex character
-    @inline(__always)
+    @inline(always)
     private static func hexDigit(_ nibble: UInt8) -> String {
         let chars: [Character] = [
             "0", "1", "2", "3", "4", "5", "6", "7",
