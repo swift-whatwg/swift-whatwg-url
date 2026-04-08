@@ -10,7 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-import ASCII
+import ASCII_Serializer_Primitives
 
 extension WHATWG_URL {
     /// Percent-encoding utilities per WHATWG URL Standard Section 1.3

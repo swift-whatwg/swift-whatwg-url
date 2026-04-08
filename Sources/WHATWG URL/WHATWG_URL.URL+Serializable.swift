@@ -11,7 +11,7 @@
 // ===----------------------------------------------------------------------===//
 
 import Domain_Standard
-public import ASCII
+public import ASCII_Serializer_Primitives
 import RFC_5952
 import RFC_791
 

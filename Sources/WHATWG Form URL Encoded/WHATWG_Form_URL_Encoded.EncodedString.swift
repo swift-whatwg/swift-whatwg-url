@@ -10,7 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-public import ASCII
+public import ASCII_Serializer_Primitives
 
 extension WHATWG_Form_URL_Encoded {
     /// A percent-encoded string per WHATWG URL Standard Section 5

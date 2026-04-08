@@ -10,7 +10,7 @@
 //
 // ===----------------------------------------------------------------------===//
 
-public import ASCII
+public import ASCII_Serializer_Primitives
 
 extension WHATWG_URL.URL {
     /// A URL scheme per WHATWG URL Standard

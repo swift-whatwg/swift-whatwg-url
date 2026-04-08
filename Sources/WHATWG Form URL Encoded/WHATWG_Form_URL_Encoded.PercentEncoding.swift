@@ -5,7 +5,7 @@
 //  Authoritative implementation of percent encoding per WHATWG URL Standard Section 5
 //  application/x-www-form-urlencoded
 
-import ASCII
+import ASCII_Serializer_Primitives
 import RFC_4648
 
 extension WHATWG_Form_URL_Encoded {

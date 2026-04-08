@@ -1,5 +1,5 @@
 import Domain_Standard
-import ASCII
+import ASCII_Serializer_Primitives
 import RFC_791
 import Testing
 
