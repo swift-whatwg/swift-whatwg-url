@@ -1,0 +1,10 @@
+# .github/metadata.yaml
+# Triaged by AI-assisted bulk pass (2026-04-29).
+description: "Swift implementation of WHATWG URL Standard."
+topics:
+  - standards
+  - whatwg
+  - url
+  - uri
+  - web-standards
+homepage: "https://swift-institute.org"
