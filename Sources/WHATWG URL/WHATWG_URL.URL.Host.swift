@@ -1,7 +1,10 @@
-public import ASCII_Serializer
+public import Byte
 public import Domain_Standard
-public import RFC_5952
+public import RFC_4291
 public import RFC_791
+import ASCII
+import Byte
+import RFC_5952
 
 extension WHATWG_URL.URL {
 
@@ -19,33 +22,6 @@ extension WHATWG_URL.URL {
     }
 }
 
-extension WHATWG_URL.URL.Host: ASCII.Serializable {
-
-    public static func serialize<Buffer>(
-        _ host: WHATWG_URL.URL.Host,
-        into buffer: inout Buffer
-    ) where Buffer: RangeReplaceableCollection, Buffer.Element == ASCII.Code {
-        switch host {
-        case .domain(let domain):
-            for byte in domain.name.utf8 { buffer.append(ASCII.Code(byte)) }
-
-        case .ipv4(let address):
-            RFC_791.IPv4.Address.serialize(address, into: &buffer)
-
-        case .ipv6(let address):
-            buffer.append(ASCII.Code.leftSquareBracket)
-            RFC_4291.IPv6.Address.serialize(address, into: &buffer)
-            buffer.append(ASCII.Code.rightSquareBracket)
-
-        case .opaque(let host):
-            for byte in host.utf8 { buffer.append(ASCII.Code(byte)) }
-
-        case .empty:
-            break
-        }
-    }
-}
-
 extension WHATWG_URL.URL.Host {
 
     public init<Bytes: Swift.Collection>(
@@ -59,8 +35,8 @@ extension WHATWG_URL.URL.Host {
             return
         }
 
-        if array.first == Byte.ascii.leftSquareBracket {
-            guard array.last == Byte.ascii.rightSquareBracket else {
+        if array.first == ASCII.Code.leftSquareBracket.byte {
+            guard array.last == ASCII.Code.rightSquareBracket.byte else {
                 throw .ipv6BracketMismatch
             }
 
@@ -103,5 +79,54 @@ extension WHATWG_URL.URL.Host {
 
 extension WHATWG_URL.URL.Host: CustomStringConvertible {
 
-    public var description: String { String(decoding: serialized, as: UTF8.self) }
+    public var description: String {
+        switch self {
+        case .domain(let domain):
+            return domain.name
+
+        case .ipv4(let address):
+            return address.description
+
+        case .ipv6(let address):
+            return "[" + Self.text(address) + "]"
+
+        case .opaque(let host):
+            return host
+
+        case .empty:
+            return ""
+        }
+    }
+}
+
+extension WHATWG_URL.URL.Host {
+
+    private static func text(_ address: RFC_4291.IPv6.Address) -> String {
+        let segments = address.segments
+        let groups: [UInt16] = [
+            segments.0, segments.1, segments.2, segments.3,
+            segments.4, segments.5, segments.6, segments.7,
+        ]
+        let compression = RFC_5952.Compression(address)
+
+        var output = ""
+        var index = 0
+
+        while index < groups.count {
+            if let compression, compression.start == index {
+                output += "::"
+                index = compression.end
+                continue
+            }
+
+            if !output.isEmpty && !output.hasSuffix(":") {
+                output += ":"
+            }
+
+            output += String(groups[index], radix: 16)
+            index += 1
+        }
+
+        return output
+    }
 }

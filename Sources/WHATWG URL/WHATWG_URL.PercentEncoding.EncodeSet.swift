@@ -1,3 +1,5 @@
+import ASCII
+
 extension WHATWG_URL.PercentEncoding {
 
     enum EncodeSet {
@@ -22,9 +24,9 @@ extension WHATWG_URL.PercentEncoding.EncodeSet {
     func shouldEncode(_ char: Character) -> Bool {
         let value = UInt32(char.utf8.first!)
 
-        let isC0Control = value <= UInt32(UInt8.ascii.us)
+        let isC0Control = value <= UInt32(ASCII.Code.us.underlying)
 
-        let isNonASCII = value > UInt32(UInt8.ascii.tilde)
+        let isNonASCII = value > UInt32(ASCII.Code.tilde.underlying)
 
         let alwaysEncode =
             char == " " || char == "\"" || char == "<" || char == ">" || char == "`"

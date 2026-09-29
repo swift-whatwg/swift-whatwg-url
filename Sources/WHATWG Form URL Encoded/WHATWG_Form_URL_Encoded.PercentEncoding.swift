@@ -1,5 +1,6 @@
 import ASCII
-import ASCII_Serializer
+import Byte
+import Byte
 
 extension WHATWG_Form_URL_Encoded {
 
@@ -14,34 +15,34 @@ extension WHATWG_Form_URL_Encoded.PercentEncoding {
     ) -> String {
         var result = ""
 
-        for byte in string.utf8 {
+        for byte in [Byte](utf8: string) {
             switch byte {
 
-            case _ where byte.ascii.isAlphanumeric:
-                result.append(Character(UnicodeScalar(byte)))
+            case _ where byte.bitPattern.ascii.isAlphanumeric:
+                result.append(Character(UnicodeScalar(byte.bitPattern)))
 
-            case UInt8.ascii.asterisk,
-                UInt8.ascii.hyphen,
-                UInt8.ascii.period,
-                UInt8.ascii.underline:
-                result.append(Character(UnicodeScalar(byte)))
+            case ASCII.Code.asterisk.byte,
+                ASCII.Code.hyphen.byte,
+                ASCII.Code.period.byte,
+                ASCII.Code.underline.byte:
+                result.append(Character(UnicodeScalar(byte.bitPattern)))
 
-            case UInt8.ascii.sp:
+            case ASCII.Code.sp.byte:
                 result.append(space == .plus ? "+" : "%20")
 
             default:
 
                 result.append("%")
-                result.append(
-                    Character(UnicodeScalar(ASCII.Hexadecimal.code(byte >> 4, case: .upper)!))
-                )
-                result.append(
-                    Character(UnicodeScalar(ASCII.Hexadecimal.code(byte & 0x0F, case: .upper)!))
-                )
+                result.append(hexDigit(byte.bitPattern >> 4))
+                result.append(hexDigit(byte.bitPattern & 0x0F))
             }
         }
 
         return result
+    }
+
+    private static func hexDigit(_ nibble: UInt8) -> Character {
+        Character(UnicodeScalar(ASCII.Hexadecimal.code(nibble, case: .upper)!.underlying))
     }
 }
 
@@ -51,14 +52,14 @@ extension WHATWG_Form_URL_Encoded.PercentEncoding {
         _ string: String,
         space: WHATWG_Form_URL_Encoded.SpaceEncoding = .plus
     ) throws(Error) -> String {
-        var bytes: [UInt8] = []
+        var bytes: [Byte] = []
         var index = string.startIndex
 
         while index < string.endIndex {
             let char = string[index]
 
             if char == "+" && space == .plus {
-                bytes.append(UInt8.ascii.sp)
+                bytes.append(ASCII.Code.sp.byte)
                 index = string.index(after: index)
             } else if char == "%" {
 
@@ -80,10 +81,10 @@ extension WHATWG_Form_URL_Encoded.PercentEncoding {
                     )
                 }
 
-                bytes.append(byte)
+                bytes.append(Byte(bitPattern: byte))
                 index = string.index(after: secondIndex)
             } else {
-                bytes.append(contentsOf: String(char).utf8)
+                bytes.append(contentsOf: [Byte](utf8: String(char)))
                 index = string.index(after: index)
             }
         }

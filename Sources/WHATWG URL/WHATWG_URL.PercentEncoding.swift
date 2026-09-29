@@ -1,5 +1,6 @@
 import ASCII
-import ASCII_Serializer
+import Byte
+import Byte
 
 extension WHATWG_URL {
 
@@ -12,7 +13,7 @@ extension WHATWG_URL.PercentEncoding {
     private static func hexDigit(_ nibble: UInt8) -> String {
 
         let code = ASCII.Hexadecimal.code(nibble & 0x0F, case: .upper)!
-        return String(Character(UnicodeScalar(code)))
+        return String(Character(UnicodeScalar(code.underlying)))
     }
 }
 
@@ -29,13 +30,13 @@ extension WHATWG_URL.PercentEncoding {
                 let hex = String(chars[i + 1...i + 2])
                 if let byte = UInt8(hex, radix: 16) {
 
-                    var bytes: [UInt8] = [byte]
+                    var bytes: [Byte] = [Byte(bitPattern: byte)]
                     i += 3
 
                     while i < chars.count && chars[i] == "%", i + 2 < chars.count {
                         let nextHex = String(chars[i + 1...i + 2])
                         if let nextByte = UInt8(nextHex, radix: 16) {
-                            bytes.append(nextByte)
+                            bytes.append(Byte(bitPattern: nextByte))
                             i += 3
                         } else {
                             break
@@ -44,14 +45,14 @@ extension WHATWG_URL.PercentEncoding {
 
                     let decoded = String(decoding: bytes, as: UTF8.self)
 
-                    if decoded.utf8.elementsEqual(bytes) {
+                    if decoded.utf8.elementsEqual(bytes.lazy.map(\.bitPattern)) {
                         result += decoded
                     } else {
 
                         for byte in bytes {
                             result += "%"
-                            result += hexDigit(byte >> 4)
-                            result += hexDigit(byte & 0x0F)
+                            result += hexDigit(byte.bitPattern >> 4)
+                            result += hexDigit(byte.bitPattern & 0x0F)
                         }
                     }
                     continue
@@ -74,10 +75,10 @@ extension WHATWG_URL.PercentEncoding {
         for char in input {
             if set.shouldEncode(char) {
 
-                for byte in String(char).utf8 {
+                for byte in [Byte](utf8: String(char)) {
                     result += "%"
-                    result += hexDigit(byte >> 4)
-                    result += hexDigit(byte & 0x0F)
+                    result += hexDigit(byte.bitPattern >> 4)
+                    result += hexDigit(byte.bitPattern & 0x0F)
                 }
             } else {
                 result.append(char)

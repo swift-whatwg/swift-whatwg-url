@@ -1,4 +1,3 @@
-import RFC_3987
 import WHATWG_Form_URL_Encoded
 
 extension WHATWG_URL {
@@ -75,7 +74,7 @@ extension WHATWG_URL.URL {
             return Search.Params()
         }
         set {
-            let serialized = String(newValue)
+            let serialized = newValue.description
             query = serialized.isEmpty ? nil : serialized
         }
     }

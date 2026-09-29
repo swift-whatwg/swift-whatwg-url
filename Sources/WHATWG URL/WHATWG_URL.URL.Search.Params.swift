@@ -83,6 +83,6 @@ extension WHATWG_URL.URL.Search.Params: ExpressibleByDictionaryLiteral {
 
 extension WHATWG_URL.URL.Search.Params: CustomStringConvertible {
     public var description: String {
-        return String(self)
+        return WHATWG_Form_URL_Encoded.serialize(pairs)
     }
 }

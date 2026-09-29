@@ -1,5 +1,3 @@
-import RFC_4648
-
 public enum WHATWG_Form_URL_Encoded {}
 
 extension WHATWG_Form_URL_Encoded {

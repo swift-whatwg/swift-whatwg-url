@@ -9,6 +9,7 @@ let package = Package(
         .iOS(.v27),
         .tvOS(.v27),
         .watchOS(.v27),
+        .visionOS(.v27),
     ],
     products: [
 
@@ -23,38 +24,13 @@ let package = Package(
         ),
     ],
     dependencies: [
+        .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main"),
-        .package(url: "https://github.com/swift-atoms/swift-cursor.git", branch: "main"),
-        .package(url: "https://github.com/swift-ietf/swift-rfc-3987.git", branch: "main"),
-        .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-4291.git", branch: "main"),
         .package(url: "https://github.com/swift-ietf/swift-rfc-5952.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main"),
         .package(
             url: "https://github.com/swift-standards/swift-domain-standard.git",
-            branch: "main"
-        ),
-        .package(url: "https://github.com/swift-ietf/swift-rfc-4648.git", branch: "main"),
-        .package(
-            url: "https://github.com/swift-molecules/swift-ascii-serializer.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-ascii.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-binary.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-parser.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-ascii-parser.git",
-            branch: "main"
-        ),
-        .package(
-            url: "https://github.com/swift-molecules/swift-byte-parser.git",
             branch: "main"
         ),
     ],
@@ -64,52 +40,44 @@ let package = Package(
             name: "WHATWG URL",
             dependencies: [
                 .target(name: "WHATWG Form URL Encoded"),
-                .product(name: "RFC 3987", package: "swift-rfc-3987"),
-                .product(name: "RFC 791", package: "swift-rfc-791"),
-                .product(name: "RFC 5952", package: "swift-rfc-5952"),
-                .product(name: "Domain Standard", package: "swift-domain-standard"),
-                .product(
-                    name: "ASCII Serializer",
-                    package: "swift-ascii-serializer"
-                ),
                 .product(name: "ASCII", package: "swift-ascii"),
-                .product(name: "Binary", package: "swift-binary"),
-                .product(name: "Parser", package: "swift-parser"),
-                .product(
-                    name: "Parseable ASCII",
-                    package: "swift-ascii-parser"
-                ),
-                .product(name: "Byte Parser", package: "swift-byte-parser"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Domain Standard", package: "swift-domain-standard"),
+                .product(name: "RFC 4291", package: "swift-rfc-4291"),
+                .product(name: "RFC 5952", package: "swift-rfc-5952"),
+                .product(name: "RFC 791", package: "swift-rfc-791"),
             ]
         ),
 
         .target(
             name: "WHATWG Form URL Encoded",
             dependencies: [
-                .product(name: "RFC 4648", package: "swift-rfc-4648"),
-                .product(
-                    name: "ASCII Serializer",
-                    package: "swift-ascii-serializer"
-                ),
                 .product(name: "ASCII", package: "swift-ascii"),
-                .product(name: "Binary", package: "swift-binary"),
-                .product(
-                    name: "Parseable ASCII",
-                    package: "swift-ascii-parser"
-                ),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte", package: "swift-byte"),
             ]
         ),
 
         .testTarget(
             name: "WHATWG Form URL Encoded Tests",
             dependencies: [
-                .target(name: "WHATWG URL")
+                .target(name: "WHATWG Form URL Encoded"),
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte", package: "swift-byte"),
             ]
         ),
         .testTarget(
             name: "WHATWG URL Tests",
             dependencies: [
-                .target(name: "WHATWG URL")
+                .target(name: "WHATWG URL"),
+                .product(name: "ASCII", package: "swift-ascii"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Byte", package: "swift-byte"),
+                .product(name: "Domain Standard", package: "swift-domain-standard"),
+                .product(name: "RFC 4291", package: "swift-rfc-4291"),
+                .product(name: "RFC 791", package: "swift-rfc-791"),
             ]
         ),
     ],

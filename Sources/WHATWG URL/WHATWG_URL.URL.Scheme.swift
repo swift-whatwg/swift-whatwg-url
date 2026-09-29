@@ -1,5 +1,6 @@
-public import ASCII_Serializer
-public import Parseable_ASCII
+public import Byte
+import ASCII
+import Byte
 
 extension WHATWG_URL.URL {
 
@@ -16,24 +17,32 @@ extension WHATWG_URL.URL {
                 throw .emptyScheme
             }
 
-            let chars = Array(value.utf8)
+            let bytes = [Byte](utf8: String(value))
 
-            guard chars[0].ascii.isLetter else {
-                throw .mustStartWithAlpha(Character(UnicodeScalar(chars[0])))
+            guard bytes[0].bitPattern.ascii.isLetter else {
+                throw .mustStartWithAlpha(Character(UnicodeScalar(bytes[0].bitPattern)))
             }
 
-            for byte in chars.dropFirst() {
+            for byte in bytes.dropFirst() {
                 let isValid =
-                    byte.ascii.isAlphanumeric || byte == UInt8.ascii.plus
-                    || byte == UInt8.ascii.hyphen || byte == UInt8.ascii.period
+                    byte.bitPattern.ascii.isAlphanumeric || byte == ASCII.Code.plus.byte
+                    || byte == ASCII.Code.hyphen.byte || byte == ASCII.Code.period.byte
 
                 guard isValid else {
-                    throw .invalidCharacter(Character(UnicodeScalar(byte)))
+                    throw .invalidCharacter(Character(UnicodeScalar(byte.bitPattern)))
                 }
             }
 
             self.init(__unchecked: (), value: value.lowercased())
         }
+    }
+}
+
+extension WHATWG_URL.URL.Scheme {
+
+    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
+    where Bytes.Element == Byte {
+        try self.init(String(decoding: bytes, as: UTF8.self))
     }
 }
 
@@ -73,26 +82,7 @@ extension WHATWG_URL.URL.Scheme {
     public static let wss = Self(__unchecked: (), value: "wss")
 }
 
-extension WHATWG_URL.URL.Scheme: ASCII.Serializable {
-
-    public static func serialize<Buffer>(
-        _ scheme: WHATWG_URL.URL.Scheme,
-        into buffer: inout Buffer
-    ) where Buffer: RangeReplaceableCollection, Buffer.Element == ASCII.Code {
-        for byte in scheme.value.utf8 { buffer.append(ASCII.Code(byte)) }
-    }
-}
-
-extension WHATWG_URL.URL.Scheme: ASCII.Parseable {
-
-    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
-    where Bytes.Element == Byte {
-        let string = String(decoding: bytes, as: UTF8.self)
-        try self.init(string)
-    }
-}
-
 extension WHATWG_URL.URL.Scheme: CustomStringConvertible {
 
-    public var description: String { String(decoding: serialized, as: UTF8.self) }
+    public var description: String { value }
 }

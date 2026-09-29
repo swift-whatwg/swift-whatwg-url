@@ -246,7 +246,7 @@ struct `WHATWG_URL.URL Tests` {
         func `standard dotted-decimal IPv4`() throws {
             let url = try WHATWG_URL.URL("http://192.168.1.1/path")
             if case .ipv4(let addr) = url.host {
-                #expect(addr.octets == (192, 168, 1, 1))
+                #expect(addr == (try RFC_791.IPv4.Address("192.168.1.1")))
             } else {
                 Issue.record("Expected IPv4 host")
             }
@@ -256,7 +256,7 @@ struct `WHATWG_URL.URL Tests` {
         func `WHATWG hex IPv4`() throws {
             let url = try WHATWG_URL.URL("http://0xC0.0xA8.0x1.0x1/path")
             if case .ipv4(let addr) = url.host {
-                #expect(addr.octets == (192, 168, 1, 1))
+                #expect(addr == (try RFC_791.IPv4.Address("192.168.1.1")))
             } else {
                 Issue.record("Expected IPv4 host")
             }
@@ -266,7 +266,7 @@ struct `WHATWG_URL.URL Tests` {
         func `WHATWG octal IPv4`() throws {
             let url = try WHATWG_URL.URL("http://0300.0250.01.01/path")
             if case .ipv4(let addr) = url.host {
-                #expect(addr.octets == (192, 168, 1, 1))
+                #expect(addr == (try RFC_791.IPv4.Address("192.168.1.1")))
             } else {
                 Issue.record("Expected IPv4 host")
             }
@@ -276,7 +276,7 @@ struct `WHATWG_URL.URL Tests` {
         func `WHATWG compressed IPv4`() throws {
             let url = try WHATWG_URL.URL("http://192.168.257/path")
             if case .ipv4(let addr) = url.host {
-                #expect(addr.octets == (192, 168, 1, 1))
+                #expect(addr == (try RFC_791.IPv4.Address("192.168.1.1")))
             } else {
                 Issue.record("Expected IPv4 host")
             }
@@ -286,7 +286,7 @@ struct `WHATWG_URL.URL Tests` {
         func `WHATWG single number IPv4`() throws {
             let url = try WHATWG_URL.URL("http://3232235777/path")
             if case .ipv4(let addr) = url.host {
-                #expect(addr.octets == (192, 168, 1, 1))
+                #expect(addr == (try RFC_791.IPv4.Address("192.168.1.1")))
             } else {
                 Issue.record("Expected IPv4 host")
             }
@@ -411,13 +411,13 @@ struct `WHATWG_URL.URL Tests` {
         @Test
         func `trailing slash creates empty segment`() throws {
             let url = try WHATWG_URL.URL("http://example.com/")
-
+            #expect(url.path == .list([]))
         }
 
         @Test
         func `multiple slashes are preserved`() throws {
             let url = try WHATWG_URL.URL("http://example.com//a///b")
-
+            #expect(url.host == .domain(try Domain_Standard.Domain("example.com")))
         }
 
         @Test

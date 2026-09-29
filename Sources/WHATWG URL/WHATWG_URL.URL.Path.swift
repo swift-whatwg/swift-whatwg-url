@@ -1,4 +1,5 @@
-public import ASCII_Serializer
+public import Byte
+import Byte
 
 extension WHATWG_URL.URL {
 
@@ -7,26 +8,6 @@ extension WHATWG_URL.URL {
         case opaque(String)
 
         case list([String])
-    }
-}
-
-extension WHATWG_URL.URL.Path: ASCII.Serializable {
-
-    public static func serialize<Buffer>(
-        _ path: WHATWG_URL.URL.Path,
-        into buffer: inout Buffer
-    ) where Buffer: RangeReplaceableCollection, Buffer.Element == ASCII.Code {
-        switch path {
-        case .opaque(let segment):
-            for byte in segment.utf8 { buffer.append(ASCII.Code(byte)) }
-
-        case .list(let segments):
-            guard !segments.isEmpty else { return }
-            for segment in segments {
-                buffer.append(ASCII.Code.solidus)
-                for byte in segment.utf8 { buffer.append(ASCII.Code(byte)) }
-            }
-        }
     }
 }
 
@@ -69,7 +50,16 @@ extension WHATWG_URL.URL.Path {
 
 extension WHATWG_URL.URL.Path: CustomStringConvertible {
 
-    public var description: String { String(decoding: serialized, as: UTF8.self) }
+    public var description: String {
+        switch self {
+        case .opaque(let segment):
+            return segment
+
+        case .list(let segments):
+            guard !segments.isEmpty else { return "" }
+            return segments.map { "/" + $0 }.joined()
+        }
+    }
 }
 
 extension WHATWG_URL.URL.Path {

@@ -1,4 +1,3 @@
-import ASCII_Serializer
 import Domain_Standard
 import RFC_791
 import Testing
@@ -6,7 +5,7 @@ import Testing
 @testable import WHATWG_URL
 
 extension WHATWG_URL.URL {
-    @Suite("WHATWG URL Tests")
+    @Suite("WHATWG URL Components")
     struct Test {
 
         @Test
@@ -109,7 +108,7 @@ extension WHATWG_URL.URL {
             params.append("name", "John Doe")
             params.append("email", "john@example.com")
 
-            let query = String(params)
+            let query = params.description
             #expect(query == "name=John+Doe&email=john%40example.com")
         }
 
@@ -131,7 +130,7 @@ extension WHATWG_URL.URL {
 
         @Test
         func `URLHost IPv4 serialization`() throws {
-            let address = RFC_791.IPv4.Address(192, 168, 1, 1)
+            let address = try RFC_791.IPv4.Address("192.168.1.1")
             let host = WHATWG_URL.URL.Host.ipv4(address)
             #expect(host.description == "192.168.1.1")
         }

@@ -8,7 +8,7 @@ WHATWG URL Living Standard implementation in Swift.
 
 This package implements the [WHATWG URL Living Standard](https://url.spec.whatwg.org/), providing:
 
-- **WHATWG URL**: URL parsing, serialization, and component access through the standard's state-machine parser — `WHATWG_URL.parse(_:)` returns a `WHATWG_URL.URL` with `scheme`, `username`, `password`, `host` (domain, IPv4, IPv6, opaque, or empty, including IDNA), `port`, `path`, `query`, `fragment`, and an `href` serialization.
+- **WHATWG URL**: URL parsing, serialization, and component access through the standard's state-machine parser — `try WHATWG_URL.URL(_:)` yields a `WHATWG_URL.URL` with `scheme`, `username`, `password`, `host` (domain, IPv4, IPv6, opaque, or empty, including IDNA), `port`, `path`, `query`, `fragment`, and an `href` serialization.
 - **WHATWG Form URL Encoded**: Section 5 - `application/x-www-form-urlencoded` encoding and decoding
 
 The WHATWG URL Standard defines the precise character set and encoding rules for URL form encoding, which differs from Foundation's URL encoding in key ways:
@@ -25,7 +25,7 @@ Add to your `Package.swift`:
 
 ```swift
 dependencies: [
-    .package(url: "https://github.com/swift-whatwg/swift-whatwg-url", from: "0.2.5")
+    .package(url: "https://github.com/swift-whatwg/swift-whatwg-url", branch: "main")
 ]
 ```
 
@@ -51,7 +51,7 @@ Then add the dependency to your target:
 ```swift
 import WHATWG_URL
 
-let url = try WHATWG_URL.parse("https://example.com:8080/path?query=value#fragment")
+let url = try WHATWG_URL.URL("https://example.com:8080/path?query=value#fragment")
 
 url.scheme      // "https"
 url.host        // Optional(.domain("example.com"))
@@ -60,7 +60,7 @@ url.path        // .list(["path"])
 url.query       // Optional("query=value")
 url.fragment    // Optional("fragment")
 
-let urlString = url.href  // "https://example.com:8080/path?query=value#fragment"
+let urlString = url.href.value  // "https://example.com:8080/path?query=value#fragment"
 ```
 
 ### WHATWG Form URL Encoded
@@ -94,7 +94,7 @@ let encoded = WHATWG_Form_URL_Encoded.PercentEncoding.encode("Hello World!", spa
 #### Percent Decoding
 
 ```swift
-let decoded = WHATWG_Form_URL_Encoded.PercentEncoding.decode("Hello+World%21", space: .plus)
+let decoded = try WHATWG_Form_URL_Encoded.PercentEncoding.decode("Hello+World%21", space: .plus)
 // Result: "Hello World!"
 ```
 
@@ -131,8 +131,8 @@ Additionally, Foundation's URL encoding is more permissive with special characte
 
 ## Requirements
 
-- Swift 6.2+
-- macOS 15.0+, iOS 18.0+, tvOS 18.0+, watchOS 11.0+
+- Swift 6.4+
+- macOS 27+, iOS 27+, tvOS 27+, watchOS 27+
 
 ## License
 

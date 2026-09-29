@@ -1,4 +1,5 @@
 public import RFC_4291
+import Byte
 import RFC_791
 
 extension RFC_4291.IPv6.Address {
@@ -133,8 +134,8 @@ extension RFC_4291.IPv6.Address {
         guard pieces.count == 6 else { return nil }
 
         let octets = ipv4.octets
-        let piece6 = UInt16(octets.0) << 8 | UInt16(octets.1)
-        let piece7 = UInt16(octets.2) << 8 | UInt16(octets.3)
+        let piece6 = UInt16(octets.0.bitPattern) << 8 | UInt16(octets.1.bitPattern)
+        let piece7 = UInt16(octets.2.bitPattern) << 8 | UInt16(octets.3.bitPattern)
 
         pieces.append(piece6)
         pieces.append(piece7)

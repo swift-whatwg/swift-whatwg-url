@@ -1,67 +1,42 @@
-public import ASCII_Serializer
-import Domain_Standard
-import RFC_5952
-import RFC_791
+public import Byte
+import ASCII
+import Byte
 
-extension WHATWG_URL.URL {
+extension WHATWG_URL.URL: CustomStringConvertible {
 
-    public struct ParsingContext: Sendable {
+    public var description: String {
 
-        public let base: WHATWG_URL.URL?
+        var output = scheme.value + ":"
 
-        public init(base: WHATWG_URL.URL? = nil) {
-            self.base = base
-        }
-    }
-}
+        if let host {
+            output += "//"
 
-extension WHATWG_URL.URL.ParsingContext {
-
-    public static let none = WHATWG_URL.URL.ParsingContext(base: nil)
-}
-
-extension WHATWG_URL.URL: ASCII.Serializable {
-
-    public static func serialize<Buffer>(
-        _ url: WHATWG_URL.URL,
-        into buffer: inout Buffer
-    ) where Buffer: RangeReplaceableCollection, Buffer.Element == ASCII.Code {
-
-        Scheme.serialize(url.scheme, into: &buffer)
-        buffer.append(ASCII.Code.colon)
-
-        if let host = url.host {
-            buffer.append(ASCII.Code.solidus)
-            buffer.append(ASCII.Code.solidus)
-
-            if !url.username.isEmpty || !url.password.isEmpty {
-                for byte in url.username.utf8 { buffer.append(ASCII.Code(byte)) }
-                if !url.password.isEmpty {
-                    buffer.append(ASCII.Code.colon)
-                    for byte in url.password.utf8 { buffer.append(ASCII.Code(byte)) }
+            if !username.isEmpty || !password.isEmpty {
+                output += username
+                if !password.isEmpty {
+                    output += ":" + password
                 }
-                buffer.append(ASCII.Code.commercialAt)
+                output += "@"
             }
 
-            Host.serialize(host, into: &buffer)
+            output += host.description
 
-            if let port = url.port, Scheme.defaultPort(for: url.scheme) != port {
-                buffer.append(ASCII.Code.colon)
-                for byte in String(port).utf8 { buffer.append(ASCII.Code(byte)) }
+            if let port, Scheme.defaultPort(for: scheme) != port {
+                output += ":" + String(port)
             }
         }
 
-        Path.serialize(url.path, into: &buffer)
+        output += path.description
 
-        if let query = url.query {
-            buffer.append(ASCII.Code.questionMark)
-            for byte in query.utf8 { buffer.append(ASCII.Code(byte)) }
+        if let query {
+            output += "?" + query
         }
 
-        if let fragment = url.fragment {
-            buffer.append(ASCII.Code.numberSign)
-            for byte in fragment.utf8 { buffer.append(ASCII.Code(byte)) }
+        if let fragment {
+            output += "#" + fragment
         }
+
+        return output
     }
 }
 
@@ -76,18 +51,19 @@ extension WHATWG_URL.URL {
         var buffer = ""
         var atSignSeen = false
 
-        let array = [UInt8](bytes)
+        let array = [Byte](bytes)
 
-        let horizontalTab: UInt8 = 0x09
         var startIndex = 0
         var endIndex = array.count
         while startIndex < endIndex
-            && (array[startIndex] == UInt8.ascii.sp || array[startIndex] == horizontalTab)
+            && (array[startIndex] == ASCII.Code.sp.byte
+                || array[startIndex] == ASCII.Code.tab.byte)
         {
             startIndex += 1
         }
         while endIndex > startIndex
-            && (array[endIndex - 1] == UInt8.ascii.sp || array[endIndex - 1] == horizontalTab)
+            && (array[endIndex - 1] == ASCII.Code.sp.byte
+                || array[endIndex - 1] == ASCII.Code.tab.byte)
         {
             endIndex -= 1
         }
@@ -106,12 +82,12 @@ extension WHATWG_URL.URL {
         var pointer = 0
 
         parsing: while pointer <= trimmed.count {
-            let c: UInt8? = pointer < trimmed.count ? trimmed[pointer] : nil
+            let c: Byte? = pointer < trimmed.count ? trimmed[pointer] : nil
 
             switch state {
             case .schemeStart:
-                if let ch = c, ch.ascii.isLetter {
-                    buffer.append(Character(UnicodeScalar(ch)).lowercased())
+                if let ch = c, ch.bitPattern.ascii.isLetter {
+                    buffer.append(Character(UnicodeScalar(ch.bitPattern)).lowercased())
                     state = .scheme
                 } else if context.base != nil {
                     state = .noScheme
@@ -122,11 +98,11 @@ extension WHATWG_URL.URL {
 
             case .scheme:
                 if let ch = c,
-                    ch.ascii.isAlphanumeric || ch == UInt8.ascii.plus || ch == UInt8.ascii.hyphen
-                        || ch == UInt8.ascii.period
+                    ch.bitPattern.ascii.isAlphanumeric || ch == ASCII.Code.plus.byte
+                        || ch == ASCII.Code.hyphen.byte || ch == ASCII.Code.period.byte
                 {
-                    buffer.append(Character(UnicodeScalar(ch)).lowercased())
-                } else if c == UInt8.ascii.colon {
+                    buffer.append(Character(UnicodeScalar(ch.bitPattern)).lowercased())
+                } else if c == ASCII.Code.colon.byte {
                     do throws(Scheme.Error) {
                         url.scheme = try Scheme(buffer)
                     } catch {
@@ -137,7 +113,7 @@ extension WHATWG_URL.URL {
                     if Scheme.isSpecial(url.scheme!) {
                         state = .specialAuthoritySlashes
                     } else if trimmed.indices.contains(pointer + 1)
-                        && trimmed[pointer + 1] == UInt8.ascii.slash
+                        && trimmed[pointer + 1] == ASCII.Code.slash.byte
                     {
                         state = .pathOrAuthority
                         pointer += 1
@@ -163,17 +139,17 @@ extension WHATWG_URL.URL {
                 if c == nil {
                     self = base
                     return
-                } else if c == UInt8.ascii.slash {
+                } else if c == ASCII.Code.slash.byte {
 
                     url.host = base.host
                     url.port = base.port
                     state = .pathStart
-                } else if c == UInt8.ascii.questionMark {
+                } else if c == ASCII.Code.questionMark.byte {
                     url.host = base.host
                     url.port = base.port
                     url.path = base.path
                     state = .query
-                } else if c == UInt8.ascii.numberSign {
+                } else if c == ASCII.Code.numberSign.byte {
                     url.host = base.host
                     url.port = base.port
                     url.path = base.path
@@ -188,8 +164,8 @@ extension WHATWG_URL.URL {
                 }
 
             case .specialAuthoritySlashes:
-                if c == UInt8.ascii.slash && trimmed.indices.contains(pointer + 1)
-                    && trimmed[pointer + 1] == UInt8.ascii.slash
+                if c == ASCII.Code.slash.byte && trimmed.indices.contains(pointer + 1)
+                    && trimmed[pointer + 1] == ASCII.Code.slash.byte
                 {
                     state = .authority
                     pointer += 1
@@ -198,7 +174,7 @@ extension WHATWG_URL.URL {
                 }
 
             case .pathOrAuthority:
-                if c == UInt8.ascii.slash {
+                if c == ASCII.Code.slash.byte {
                     state = .authority
                 } else {
                     state = .path
@@ -206,7 +182,7 @@ extension WHATWG_URL.URL {
                 }
 
             case .authority:
-                if c == UInt8.ascii.commercialAt {
+                if c == ASCII.Code.commercialAt.byte {
                     if atSignSeen {
                         buffer = "%40" + buffer
                     }
@@ -225,14 +201,14 @@ extension WHATWG_URL.URL {
                         url.username = WHATWG_URL.PercentEncoding.encode(buffer, using: .userinfo)
                     }
                     buffer = ""
-                } else if c == nil || c == UInt8.ascii.slash || c == UInt8.ascii.questionMark
-                    || c == UInt8.ascii.numberSign
+                } else if c == nil || c == ASCII.Code.slash.byte
+                    || c == ASCII.Code.questionMark.byte || c == ASCII.Code.numberSign.byte
                 {
                     pointer -= buffer.count + 1
                     buffer = ""
                     state = .host
                 } else {
-                    buffer.append(Character(UnicodeScalar(c!)))
+                    buffer.append(Character(UnicodeScalar(c!.bitPattern)))
                 }
 
             case .host:
@@ -240,32 +216,33 @@ extension WHATWG_URL.URL {
                 var insideBrackets = false
                 while pointer < trimmed.count {
                     let ch = trimmed[pointer]
-                    if ch == UInt8.ascii.leftSquareBracket {
+                    if ch == ASCII.Code.leftSquareBracket.byte {
                         insideBrackets = true
-                    } else if ch == UInt8.ascii.rightSquareBracket {
+                    } else if ch == ASCII.Code.rightSquareBracket.byte {
                         insideBrackets = false
                     }
 
                     if !insideBrackets
-                        && (ch == UInt8.ascii.colon || ch == UInt8.ascii.slash
-                            || ch == UInt8.ascii.questionMark || ch == UInt8.ascii.numberSign)
+                        && (ch == ASCII.Code.colon.byte || ch == ASCII.Code.slash.byte
+                            || ch == ASCII.Code.questionMark.byte
+                            || ch == ASCII.Code.numberSign.byte)
                     {
                         break
                     }
-                    buffer.append(Character(UnicodeScalar(ch)))
+                    buffer.append(Character(UnicodeScalar(ch.bitPattern)))
                     pointer += 1
                 }
 
                 let hostContext: Host.Context =
                     Scheme.isSpecial(url.scheme!) ? .special : .nonSpecial
                 do throws(Host.Error) {
-                    url.host = try Host(ascii: [Byte](buffer.utf8), in: hostContext)
+                    url.host = try Host(ascii: [Byte](utf8: buffer), in: hostContext)
                 } catch {
                     throw .invalidHost(error)
                 }
                 buffer = ""
 
-                if pointer < trimmed.count && trimmed[pointer] == UInt8.ascii.colon {
+                if pointer < trimmed.count && trimmed[pointer] == ASCII.Code.colon.byte {
                     state = .port
                 } else {
                     state = .pathStart
@@ -273,8 +250,8 @@ extension WHATWG_URL.URL {
                 }
 
             case .port:
-                if let ch = c, ch.ascii.isDigit {
-                    buffer.append(Character(UnicodeScalar(ch)))
+                if let ch = c, ch.bitPattern.ascii.isDigit {
+                    buffer.append(Character(UnicodeScalar(ch.bitPattern)))
                 } else {
                     if !buffer.isEmpty {
                         guard let port = UInt16(buffer) else {
@@ -293,13 +270,13 @@ extension WHATWG_URL.URL {
 
             case .pathStart:
                 state = .path
-                if c != UInt8.ascii.slash {
+                if c != ASCII.Code.slash.byte {
                     pointer -= 1
                 }
 
             case .path:
-                if c == nil || c == UInt8.ascii.slash || c == UInt8.ascii.questionMark
-                    || c == UInt8.ascii.numberSign
+                if c == nil || c == ASCII.Code.slash.byte || c == ASCII.Code.questionMark.byte
+                    || c == ASCII.Code.numberSign.byte
                 {
                     if !buffer.isEmpty {
                         let decoded = WHATWG_URL.PercentEncoding.decode(buffer)
@@ -312,23 +289,23 @@ extension WHATWG_URL.URL {
                         buffer = ""
                     }
 
-                    if c == UInt8.ascii.slash {
+                    if c == ASCII.Code.slash.byte {
 
-                    } else if c == UInt8.ascii.questionMark {
+                    } else if c == ASCII.Code.questionMark.byte {
                         state = .query
-                    } else if c == UInt8.ascii.numberSign {
+                    } else if c == ASCII.Code.numberSign.byte {
                         state = .fragment
                     } else {
 
                         break parsing
                     }
                 } else {
-                    buffer.append(Character(UnicodeScalar(c!)))
+                    buffer.append(Character(UnicodeScalar(c!.bitPattern)))
                 }
 
             case .relativePath:
                 state = .path
-                if c != UInt8.ascii.slash {
+                if c != ASCII.Code.slash.byte {
                     if case .list(var segments) = url.path {
                         if !segments.isEmpty {
                             segments.removeLast()
@@ -341,10 +318,10 @@ extension WHATWG_URL.URL {
             case .opaquePath:
                 while pointer < trimmed.count {
                     let ch = trimmed[pointer]
-                    if ch == UInt8.ascii.questionMark || ch == UInt8.ascii.numberSign {
+                    if ch == ASCII.Code.questionMark.byte || ch == ASCII.Code.numberSign.byte {
                         break
                     }
-                    buffer.append(Character(UnicodeScalar(ch)))
+                    buffer.append(Character(UnicodeScalar(ch.bitPattern)))
                     pointer += 1
                 }
 
@@ -353,9 +330,9 @@ extension WHATWG_URL.URL {
 
                 if pointer < trimmed.count {
                     let ch = trimmed[pointer]
-                    if ch == UInt8.ascii.questionMark {
+                    if ch == ASCII.Code.questionMark.byte {
                         state = .query
-                    } else if ch == UInt8.ascii.numberSign {
+                    } else if ch == ASCII.Code.numberSign.byte {
                         state = .fragment
                     }
                 } else {
@@ -366,17 +343,17 @@ extension WHATWG_URL.URL {
             case .query:
                 while pointer < trimmed.count {
                     let ch = trimmed[pointer]
-                    if ch == UInt8.ascii.numberSign {
+                    if ch == ASCII.Code.numberSign.byte {
                         break
                     }
-                    buffer.append(Character(UnicodeScalar(ch)))
+                    buffer.append(Character(UnicodeScalar(ch.bitPattern)))
                     pointer += 1
                 }
 
                 url.query = WHATWG_URL.PercentEncoding.encode(buffer, using: .query)
                 buffer = ""
 
-                if pointer < trimmed.count && trimmed[pointer] == UInt8.ascii.numberSign {
+                if pointer < trimmed.count && trimmed[pointer] == ASCII.Code.numberSign.byte {
                     state = .fragment
 
                 } else {
@@ -386,7 +363,7 @@ extension WHATWG_URL.URL {
 
             case .fragment:
                 while pointer < trimmed.count {
-                    buffer.append(Character(UnicodeScalar(trimmed[pointer])))
+                    buffer.append(Character(UnicodeScalar(trimmed[pointer].bitPattern)))
                     pointer += 1
                 }
 
@@ -406,8 +383,7 @@ extension WHATWG_URL.URL {
 extension WHATWG_URL.URL {
 
     public init(_ string: some StringProtocol, base: WHATWG_URL.URL? = nil) throws(Error) {
-        let bytes = [Byte](string.utf8)
-        try self.init(ascii: bytes, in: ParsingContext(base: base))
+        try self.init(ascii: [Byte](utf8: String(string)), in: ParsingContext(base: base))
     }
 
     public init?(parsing string: some StringProtocol, base: WHATWG_URL.URL? = nil) {
@@ -416,12 +392,5 @@ extension WHATWG_URL.URL {
         } catch {
             return nil
         }
-    }
-}
-
-extension WHATWG_URL.URL: CustomStringConvertible {
-
-    public var description: String {
-        String(decoding: serialized, as: UTF8.self)
     }
 }

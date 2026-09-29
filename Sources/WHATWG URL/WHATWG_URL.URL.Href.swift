@@ -1,6 +1,3 @@
-public import ASCII_Serializer
-public import Parseable_ASCII
-
 extension WHATWG_URL.URL {
 
     public struct Href: Hashable, Sendable {
@@ -18,26 +15,14 @@ extension WHATWG_URL.URL {
     }
 }
 
-extension WHATWG_URL.URL.Href: ASCII.Serializable {
+extension WHATWG_URL.URL.Href {
 
-    public static func serialize<Buffer>(
-        _ href: WHATWG_URL.URL.Href,
-        into buffer: inout Buffer
-    ) where Buffer: RangeReplaceableCollection, Buffer.Element == ASCII.Code {
-        for byte in href.value.utf8 { buffer.append(ASCII.Code(byte)) }
-    }
-}
-
-extension WHATWG_URL.URL.Href: ASCII.Parseable {
-
-    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(WHATWG_URL.URL.Error)
-    where Bytes.Element == Byte {
-        let url = try WHATWG_URL.URL(ascii: bytes, in: .none)
-        self.init(url)
+    public init(_ string: some StringProtocol) throws(WHATWG_URL.URL.Error) {
+        self.init(try WHATWG_URL.URL(string))
     }
 }
 
 extension WHATWG_URL.URL.Href: CustomStringConvertible {
 
-    public var description: String { String(decoding: serialized, as: UTF8.self) }
+    public var description: String { value }
 }
