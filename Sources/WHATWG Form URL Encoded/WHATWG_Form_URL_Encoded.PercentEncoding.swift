@@ -74,7 +74,7 @@ extension WHATWG_Form_URL_Encoded.PercentEncoding {
                 }
 
                 let hexString = String(string[nextIndex...secondIndex])
-                guard let byte = UInt8(hexString, radix: 16) else {
+                guard hexString.allSatisfy(\.isHexDigit), let byte = UInt8(hexString, radix: 16) else {
                     throw .invalidPercentEncoding(
                         position: string.distance(from: string.startIndex, to: index),
                         found: "%" + hexString

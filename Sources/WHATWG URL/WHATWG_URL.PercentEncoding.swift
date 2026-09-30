@@ -28,14 +28,14 @@ extension WHATWG_URL.PercentEncoding {
             if chars[i] == "%", i + 2 < chars.count {
 
                 let hex = String(chars[i + 1...i + 2])
-                if let byte = UInt8(hex, radix: 16) {
+                if hex.allSatisfy(\.isHexDigit), let byte = UInt8(hex, radix: 16) {
 
                     var bytes: [Byte] = [Byte(bitPattern: byte)]
                     i += 3
 
                     while i < chars.count && chars[i] == "%", i + 2 < chars.count {
                         let nextHex = String(chars[i + 1...i + 2])
-                        if let nextByte = UInt8(nextHex, radix: 16) {
+                        if nextHex.allSatisfy(\.isHexDigit), let nextByte = UInt8(nextHex, radix: 16) {
                             bytes.append(Byte(bitPattern: nextByte))
                             i += 3
                         } else {
