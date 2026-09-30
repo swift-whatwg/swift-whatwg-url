@@ -120,7 +120,7 @@ extension WHATWG_URL.URL.Path {
     private func isWindowsDriveLetter(_ string: String) -> Bool {
         guard string.count == 2 else { return false }
         let chars = Array(string)
-        guard chars[0].isLetter else { return false }
+        guard chars[0].isASCII, chars[0].isLetter else { return false }
         return chars[1] == ":" || chars[1] == "|"
     }
 }
