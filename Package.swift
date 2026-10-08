@@ -42,7 +42,6 @@ let package = Package(
                 .target(name: "WHATWG Form URL Encoded"),
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte", package: "swift-byte"),
                 .product(name: "Domain Standard", package: "swift-domain-standard"),
                 .product(name: "RFC 4291", package: "swift-rfc-4291"),
                 .product(name: "RFC 5952", package: "swift-rfc-5952"),
@@ -55,7 +54,6 @@ let package = Package(
             dependencies: [
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte", package: "swift-byte"),
             ]
         ),
 
@@ -65,7 +63,6 @@ let package = Package(
                 .target(name: "WHATWG Form URL Encoded"),
                 .product(name: "ASCII", package: "swift-ascii"),
                 .product(name: "Byte", package: "swift-byte"),
-                .product(name: "Byte", package: "swift-byte"),
             ]
         ),
         .testTarget(
@@ -73,7 +70,6 @@ let package = Package(
             dependencies: [
                 .target(name: "WHATWG URL"),
                 .product(name: "ASCII", package: "swift-ascii"),
-                .product(name: "Byte", package: "swift-byte"),
                 .product(name: "Byte", package: "swift-byte"),
                 .product(name: "Domain Standard", package: "swift-domain-standard"),
                 .product(name: "RFC 4291", package: "swift-rfc-4291"),
