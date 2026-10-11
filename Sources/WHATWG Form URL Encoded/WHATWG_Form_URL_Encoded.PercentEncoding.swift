@@ -18,7 +18,7 @@ extension WHATWG_Form_URL_Encoded.PercentEncoding {
         for byte in [Byte](utf8: string) {
             switch byte {
 
-            case _ where byte.bitPattern.ascii.isAlphanumeric:
+            case _ where ASCII.Code(unchecked: byte).isAlphanumeric:
                 result.append(Character(UnicodeScalar(byte.bitPattern)))
 
             case ASCII.Code.asterisk.byte,

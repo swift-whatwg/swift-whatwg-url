@@ -19,13 +19,13 @@ extension WHATWG_URL.URL {
 
             let bytes = [Byte](utf8: String(value))
 
-            guard bytes[0].bitPattern.ascii.isLetter else {
+            guard ASCII.Code(unchecked: bytes[0]).isLetter else {
                 throw .mustStartWithAlpha(Character(UnicodeScalar(bytes[0].bitPattern)))
             }
 
             for byte in bytes.dropFirst() {
                 let isValid =
-                    byte.bitPattern.ascii.isAlphanumeric || byte == ASCII.Code.plus.byte
+                    ASCII.Code(unchecked: byte).isAlphanumeric || byte == ASCII.Code.plus.byte
                     || byte == ASCII.Code.hyphen.byte || byte == ASCII.Code.period.byte
 
                 guard isValid else {

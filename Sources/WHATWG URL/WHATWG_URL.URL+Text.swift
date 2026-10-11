@@ -86,7 +86,7 @@ extension WHATWG_URL.URL {
 
             switch state {
             case .schemeStart:
-                if let ch = c, ch.bitPattern.ascii.isLetter {
+                if let ch = c, ASCII.Code(unchecked: ch).isLetter {
                     buffer.append(Character(UnicodeScalar(ch.bitPattern)).lowercased())
                     state = .scheme
                 } else if context.base != nil {
@@ -98,7 +98,7 @@ extension WHATWG_URL.URL {
 
             case .scheme:
                 if let ch = c,
-                    ch.bitPattern.ascii.isAlphanumeric || ch == ASCII.Code.plus.byte
+                    ASCII.Code(unchecked: ch).isAlphanumeric || ch == ASCII.Code.plus.byte
                         || ch == ASCII.Code.hyphen.byte || ch == ASCII.Code.period.byte
                 {
                     buffer.append(Character(UnicodeScalar(ch.bitPattern)).lowercased())
@@ -250,7 +250,7 @@ extension WHATWG_URL.URL {
                 }
 
             case .port:
-                if let ch = c, ch.bitPattern.ascii.isDigit {
+                if let ch = c, ASCII.Code(unchecked: ch).isDigit {
                     buffer.append(Character(UnicodeScalar(ch.bitPattern)))
                 } else {
                     if !buffer.isEmpty {
