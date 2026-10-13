@@ -1,6 +1,6 @@
 extension WHATWG_URL.URL.Host {
 
-    public enum Error: Swift.Error, Hashable, Sendable {
+    public enum Error: Swift::Error, Hashable, Sendable {
 
         case invalidDomain(String)
 

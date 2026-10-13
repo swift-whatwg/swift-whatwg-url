@@ -1,6 +1,5 @@
 public import Byte
 import ASCII
-import Byte
 
 extension WHATWG_URL.URL: CustomStringConvertible {
 
@@ -42,7 +41,7 @@ extension WHATWG_URL.URL: CustomStringConvertible {
 
 extension WHATWG_URL.URL {
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         ascii bytes: Bytes,
         in context: ParsingContext
     ) throws(Error) where Bytes.Element == Byte {

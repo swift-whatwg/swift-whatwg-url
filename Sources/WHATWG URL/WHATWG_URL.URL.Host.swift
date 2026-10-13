@@ -3,14 +3,13 @@ public import Domain_Standard
 public import RFC_4291
 public import RFC_791
 import ASCII
-import Byte
 import RFC_5952
 
 extension WHATWG_URL.URL {
 
     public enum Host: Hashable, Sendable {
 
-        case domain(Domain_Standard.Domain)
+        case domain(Domain_Standard::Domain)
 
         case ipv4(RFC_791.IPv4.Address)
 
@@ -24,7 +23,7 @@ extension WHATWG_URL.URL {
 
 extension WHATWG_URL.URL.Host {
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         ascii bytes: Bytes,
         in context: Context
     ) throws(Error) where Bytes.Element == Byte {
@@ -64,8 +63,8 @@ extension WHATWG_URL.URL.Host {
                 return
             }
 
-            do throws(Domain_Standard.Domain.Error) {
-                let domain = try Domain_Standard.Domain(hostString)
+            do throws(Domain_Standard::Domain.Error) {
+                let domain = try Domain_Standard::Domain(hostString)
                 self = .domain(domain)
             } catch {
                 throw .invalidDomain(hostString)

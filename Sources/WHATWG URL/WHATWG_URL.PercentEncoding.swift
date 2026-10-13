@@ -21,7 +21,7 @@ extension WHATWG_URL.PercentEncoding {
 
     static func decode(_ input: String) -> String {
         var result = ""
-        var chars = Array(input)
+        let chars = Array(input)
         var i = 0
 
         while i < chars.count {

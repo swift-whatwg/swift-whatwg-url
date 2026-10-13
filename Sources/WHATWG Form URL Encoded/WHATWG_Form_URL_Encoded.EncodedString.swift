@@ -1,5 +1,4 @@
 public import Byte
-import Byte
 
 extension WHATWG_Form_URL_Encoded {
 
@@ -19,7 +18,7 @@ extension WHATWG_Form_URL_Encoded {
 
 extension WHATWG_Form_URL_Encoded.EncodedString {
 
-    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) where Bytes.Element == Byte {
+    public init<Bytes: Swift::Collection>(ascii bytes: Bytes) where Bytes.Element == Byte {
 
         self.init(__unchecked: String(decoding: bytes, as: UTF8.self))
     }

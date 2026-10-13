@@ -18,7 +18,7 @@ struct `WHATWG_URL.URL Tests` {
 
             let url = try WHATWG_URL.URL("https://user:pass@example.com:8443/a/b?q=1#frag")
             #expect(url.scheme.value == "https")
-            #expect(url.host == .domain(try Domain_Standard.Domain("example.com")))
+            #expect(url.host == .domain(try Domain_Standard::Domain("example.com")))
             #expect(url.port == 8443)
             #expect(url.path == .list(["a", "b"]))
             #expect(url.query == "q=1")
@@ -26,14 +26,14 @@ struct `WHATWG_URL.URL Tests` {
 
             let substring: Substring = "http://example.org/x"[...]
             let fromSubstring = try WHATWG_URL.URL(substring)
-            #expect(fromSubstring.host == .domain(try Domain_Standard.Domain("example.org")))
+            #expect(fromSubstring.host == .domain(try Domain_Standard::Domain("example.org")))
         }
 
         @Test
         func `parse simple HTTP URL`() throws {
             let url = try WHATWG_URL.URL("http://example.com")
             #expect(url.scheme.value == "http")
-            #expect(url.host == .domain(try Domain_Standard.Domain("example.com")))
+            #expect(url.host == .domain(try Domain_Standard::Domain("example.com")))
             #expect(url.port == nil)
             #expect(url.path == .list([]))
         }
@@ -42,7 +42,7 @@ struct `WHATWG_URL.URL Tests` {
         func `parse HTTPS URL with path`() throws {
             let url = try WHATWG_URL.URL("https://example.com/path/to/resource")
             #expect(url.scheme.value == "https")
-            #expect(url.host == .domain(try Domain_Standard.Domain("example.com")))
+            #expect(url.host == .domain(try Domain_Standard::Domain("example.com")))
             #expect(url.path == .list(["path", "to", "resource"]))
         }
 
@@ -417,7 +417,7 @@ struct `WHATWG_URL.URL Tests` {
         @Test
         func `multiple slashes are preserved`() throws {
             let url = try WHATWG_URL.URL("http://example.com//a///b")
-            #expect(url.host == .domain(try Domain_Standard.Domain("example.com")))
+            #expect(url.host == .domain(try Domain_Standard::Domain("example.com")))
         }
 
         @Test

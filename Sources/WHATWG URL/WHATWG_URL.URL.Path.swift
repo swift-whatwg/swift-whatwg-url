@@ -1,5 +1,4 @@
 public import Byte
-import Byte
 
 extension WHATWG_URL.URL {
 
@@ -13,7 +12,7 @@ extension WHATWG_URL.URL {
 
 extension WHATWG_URL.URL.Path {
 
-    public init<Bytes: Swift.Collection>(
+    public init<Bytes: Swift::Collection>(
         ascii bytes: Bytes,
         in context: WHATWG_URL.URL.Path.Context
     ) throws(Error) where Bytes.Element == Byte {

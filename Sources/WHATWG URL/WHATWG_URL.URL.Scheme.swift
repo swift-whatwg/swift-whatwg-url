@@ -1,6 +1,5 @@
 public import Byte
 import ASCII
-import Byte
 
 extension WHATWG_URL.URL {
 
@@ -40,7 +39,7 @@ extension WHATWG_URL.URL {
 
 extension WHATWG_URL.URL.Scheme {
 
-    public init<Bytes: Swift.Collection>(ascii bytes: Bytes) throws(Error)
+    public init<Bytes: Swift::Collection>(ascii bytes: Bytes) throws(Error)
     where Bytes.Element == Byte {
         try self.init(String(decoding: bytes, as: UTF8.self))
     }
