@@ -22,7 +22,10 @@ extension WHATWG_URL.PercentEncoding {
 
 extension WHATWG_URL.PercentEncoding.EncodeSet {
     func shouldEncode(_ char: Character) -> Bool {
-        let value = UInt32(char.utf8.first!)
+        guard let firstByte = char.utf8.first else {
+            preconditionFailure("A Character always has at least one UTF-8 byte")
+        }
+        let value = UInt32(firstByte)
 
         let isC0Control = value <= UInt32(ASCII.Code.us.underlying)
 

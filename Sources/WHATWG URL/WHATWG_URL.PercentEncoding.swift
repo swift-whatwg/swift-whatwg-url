@@ -1,6 +1,5 @@
 import ASCII
 import Byte
-import Byte
 
 extension WHATWG_URL {
 
@@ -12,7 +11,9 @@ extension WHATWG_URL.PercentEncoding {
     @inline(always)
     private static func hexDigit(_ nibble: UInt8) -> String {
 
-        let code = ASCII.Hexadecimal.code(nibble & 0x0F, case: .upper)!
+        guard let code = ASCII.Hexadecimal.code(nibble & 0x0F, case: .upper) else {
+            preconditionFailure("A masked nibble always has a hexadecimal digit")
+        }
         return String(Character(UnicodeScalar(code.underlying)))
     }
 }
@@ -35,12 +36,11 @@ extension WHATWG_URL.PercentEncoding {
 
                     while i < chars.count && chars[i] == "%", i + 2 < chars.count {
                         let nextHex = String(chars[i + 1...i + 2])
-                        if nextHex.allSatisfy(\.isHexDigit), let nextByte = UInt8(nextHex, radix: 16) {
-                            bytes.append(Byte(bitPattern: nextByte))
-                            i += 3
-                        } else {
+                        guard nextHex.allSatisfy(\.isHexDigit), let nextByte = UInt8(nextHex, radix: 16) else {
                             break
                         }
+                        bytes.append(Byte(bitPattern: nextByte))
+                        i += 3
                     }
 
                     let decoded = String(decoding: bytes, as: UTF8.self)

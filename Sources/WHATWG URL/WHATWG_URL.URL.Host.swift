@@ -1,9 +1,9 @@
+import ASCII
 public import Byte
 public import Domain_Standard
 public import RFC_4291
-public import RFC_791
-import ASCII
 import RFC_5952
+public import RFC_791
 
 extension WHATWG_URL.URL {
 
@@ -41,11 +41,10 @@ extension WHATWG_URL.URL.Host {
 
             let ipv6String = String(decoding: array, as: UTF8.self)
 
-            if let address = RFC_4291.IPv6.Address(whatwgString: ipv6String) {
-                self = .ipv6(address)
-            } else {
+            guard let address = RFC_4291.IPv6.Address(whatwgString: ipv6String) else {
                 throw .invalidIPv6Address(ipv6String)
             }
+            self = .ipv6(address)
             return
         }
 

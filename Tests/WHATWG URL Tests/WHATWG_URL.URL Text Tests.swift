@@ -1,5 +1,4 @@
 import Byte
-import Byte
 import Domain_Standard
 import RFC_791
 import Testing
@@ -39,8 +38,10 @@ struct `WHATWG_URL.URL Text Tests` {
 
     @Test
     func `a list path renders with a leading solidus per segment`() throws {
-        #expect(WHATWG_URL.URL.Path.list(["path", "to", "resource"]).description
-            == "/path/to/resource")
+        #expect(
+            WHATWG_URL.URL.Path.list(["path", "to", "resource"]).description
+                == "/path/to/resource"
+        )
         #expect(WHATWG_URL.URL.Path.emptyList.description.isEmpty)
         #expect(WHATWG_URL.URL.Path.opaque("opaque-data").description == "opaque-data")
     }
@@ -106,24 +107,34 @@ struct `WHATWG_URL.URL Text Tests` {
     @Test
     func `a host read from bytes follows the scheme context`() throws {
         let bytes = [Byte](utf8: "example.com")
-        #expect(try WHATWG_URL.URL.Host(ascii: bytes, in: .special)
-            == .domain(try Domain("example.com")))
+        #expect(
+            try WHATWG_URL.URL.Host(ascii: bytes, in: .special)
+                == .domain(try Domain("example.com"))
+        )
         #expect(try WHATWG_URL.URL.Host(ascii: bytes, in: .nonSpecial) == .opaque("example.com"))
     }
 
     @Test
     func `an IPv6 host read from bytes renders back in canonical form`() throws {
-        #expect(try WHATWG_URL.URL.Host(ascii: [Byte](utf8: "[::1]"), in: .special).description
-            == "[::1]")
-        #expect(try WHATWG_URL.URL.Host(ascii: [Byte](utf8: "[2001:db8::1]"), in: .special)
-            .description == "[2001:db8::1]")
+        #expect(
+            try WHATWG_URL.URL.Host(ascii: [Byte](utf8: "[::1]"), in: .special).description
+                == "[::1]"
+        )
+        #expect(
+            try WHATWG_URL.URL.Host(ascii: [Byte](utf8: "[2001:db8::1]"), in: .special)
+                .description == "[2001:db8::1]"
+        )
     }
 
     @Test
     func `a path read from bytes follows the path context`() throws {
-        #expect(try WHATWG_URL.URL.Path(ascii: [Byte](utf8: "a/b/c"), in: .list)
-            == .list(["a", "b", "c"]))
-        #expect(try WHATWG_URL.URL.Path(ascii: [Byte](utf8: "opaque-data"), in: .opaque)
-            == .opaque("opaque-data"))
+        #expect(
+            try WHATWG_URL.URL.Path(ascii: [Byte](utf8: "a/b/c"), in: .list)
+                == .list(["a", "b", "c"])
+        )
+        #expect(
+            try WHATWG_URL.URL.Path(ascii: [Byte](utf8: "opaque-data"), in: .opaque)
+                == .opaque("opaque-data")
+        )
     }
 }

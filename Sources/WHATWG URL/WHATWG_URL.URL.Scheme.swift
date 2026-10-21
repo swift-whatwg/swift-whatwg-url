@@ -1,5 +1,5 @@
-public import Byte
 import ASCII
+public import Byte
 
 extension WHATWG_URL.URL {
 

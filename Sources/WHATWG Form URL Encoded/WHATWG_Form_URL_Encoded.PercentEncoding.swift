@@ -1,6 +1,5 @@
 import ASCII
 import Byte
-import Byte
 
 extension WHATWG_Form_URL_Encoded {
 
@@ -42,7 +41,10 @@ extension WHATWG_Form_URL_Encoded.PercentEncoding {
     }
 
     private static func hexDigit(_ nibble: UInt8) -> Character {
-        Character(UnicodeScalar(ASCII.Hexadecimal.code(nibble, case: .upper)!.underlying))
+        guard let code = ASCII.Hexadecimal.code(nibble, case: .upper) else {
+            preconditionFailure("A nibble below 16 always has a hexadecimal digit")
+        }
+        return Character(UnicodeScalar(code.underlying))
     }
 }
 

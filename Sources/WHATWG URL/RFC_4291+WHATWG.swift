@@ -1,5 +1,5 @@
-public import RFC_4291
 import Byte
+public import RFC_4291
 import RFC_791
 
 extension RFC_4291.IPv6.Address {
