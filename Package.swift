@@ -26,9 +26,9 @@ let package = Package(
     dependencies: [
         .package(url: "https://github.com/swift-atoms/swift-ascii.git", branch: "main"),
         .package(url: "https://github.com/swift-atoms/swift-byte.git", branch: "main"),
-        .package(url: "https://github.com/swift-ietf/swift-rfc-4291.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-4291.git", branch: "main", traits: ["Coder"]),
         .package(url: "https://github.com/swift-ietf/swift-rfc-5952.git", branch: "main"),
-        .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main"),
+        .package(url: "https://github.com/swift-ietf/swift-rfc-791.git", branch: "main", traits: ["Coder"]),
         .package(
             url: "https://github.com/swift-standards/swift-domain-standard.git",
             branch: "main"
