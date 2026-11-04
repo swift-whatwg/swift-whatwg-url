@@ -1,139 +1,18 @@
 # swift-whatwg-url
 
-![Development Status](https://img.shields.io/badge/status-active--development-blue.svg)
+Use this package when you need to parse, resolve and serialize URLs following the WHATWG URL Standard's parser, or to encode and decode `application/x-www-form-urlencoded` text. Start from `WHATWG_URL.URL` for URLs and `WHATWG_URL.URL.Search.Params` for a query's name and value pairs. If you only need form encoding, use the `WHATWG Form URL Encoded` product and start from `WHATWG_Form_URL_Encoded`. If you need RFC 3986 URI syntax rather than browser URL parsing, use swift-rfc-3986.
 
-WHATWG URL Living Standard implementation in Swift.
+## Laws
 
-## Overview
-
-This package implements the [WHATWG URL Living Standard](https://url.spec.whatwg.org/), providing:
-
-- **WHATWG URL**: URL parsing, serialization, and component access through the standard's state-machine parser — `try WHATWG_URL.URL(_:)` yields a `WHATWG_URL.URL` with `scheme`, `username`, `password`, `host` (domain, IPv4, IPv6, opaque, or empty, including IDNA), `port`, `path`, `query`, `fragment`, and an `href` serialization.
-- **WHATWG Form URL Encoded**: Section 5 - `application/x-www-form-urlencoded` encoding and decoding
-
-The WHATWG URL Standard defines the precise character set and encoding rules for URL form encoding, which differs from Foundation's URL encoding in key ways:
-
-- **Space encoding**: WHATWG uses `+`, Foundation uses `%20`
-- **Character set**: WHATWG only leaves alphanumeric + `*-._` unencoded
-- **Specification compliance**: Exact implementation of the WHATWG algorithm
-
-## Installation
-
-### Swift Package Manager
-
-Add to your `Package.swift`:
-
-```swift
-dependencies: [
-    .package(url: "https://github.com/swift-whatwg/swift-whatwg-url", branch: "main")
-]
-```
-
-Then add the dependency to your target:
-
-```swift
-.target(
-    name: "YourTarget",
-    dependencies: [
-        // For URL parsing, serialization, and component access
-        .product(name: "WHATWG URL", package: "swift-whatwg-url"),
-
-        // Or just for form URL encoding
-        .product(name: "WHATWG Form URL Encoded", package: "swift-whatwg-url")
-    ]
-)
-```
-
-## Usage
-
-### WHATWG URL
-
-```swift
-import WHATWG_URL
-
-let url = try WHATWG_URL.URL("https://example.com:8080/path?query=value#fragment")
-
-url.scheme      // "https"
-url.host        // Optional(.domain("example.com"))
-url.port        // Optional(8080)
-url.path        // .list(["path"])
-url.query       // Optional("query=value")
-url.fragment    // Optional("fragment")
-
-let urlString = url.href.value  // "https://example.com:8080/path?query=value#fragment"
-```
-
-### WHATWG Form URL Encoded
-
-#### Serialize to application/x-www-form-urlencoded
-
-```swift
-import WHATWG_Form_URL_Encoded
-
-let encoded = WHATWG_Form_URL_Encoded.serialize([
-    ("name", "John Doe"),
-    ("email", "john@example.com")
-])
-// Result: "name=John+Doe&email=john%40example.com"
-```
-
-#### Parse application/x-www-form-urlencoded
-
-```swift
-let pairs = WHATWG_Form_URL_Encoded.parse("name=John+Doe&email=john%40example.com")
-// Result: [("name", "John Doe"), ("email", "john@example.com")]
-```
-
-#### Percent Encoding
-
-```swift
-let encoded = WHATWG_Form_URL_Encoded.PercentEncoding.encode("Hello World!", space: .plus)
-// Result: "Hello+World%21"
-```
-
-#### Percent Decoding
-
-```swift
-let decoded = try WHATWG_Form_URL_Encoded.PercentEncoding.decode("Hello+World%21", space: .plus)
-// Result: "Hello World!"
-```
-
-## WHATWG Character Set
-
-According to the WHATWG URL Standard, only the following characters are left unencoded:
-
-- ASCII alphanumeric (`a-z`, `A-Z`, `0-9`)
-- Asterisk (`*`)
-- Hyphen (`-`)
-- Period (`.`)
-- Underscore (`_`)
-
-All other characters are percent-encoded. Space (0x20) is encoded as `+` when `space` is `.plus`.
-
-## Difference from Foundation
-
-Foundation's `URLComponents` and related APIs use a different encoding scheme:
-
-```swift
-// WHATWG (this package)
-"Hello World!" → "Hello+World%21"
-
-// Foundation
-"Hello World!" → "Hello%20World!"  // Different space encoding
-```
-
-Additionally, Foundation's URL encoding is more permissive with special characters, while WHATWG strictly limits unencoded characters to the set above.
-
-## Reference
-
-- [WHATWG URL Living Standard](https://url.spec.whatwg.org/)
-- [Section 5: application/x-www-form-urlencoded](https://url.spec.whatwg.org/#application/x-www-form-urlencoded)
-
-## Requirements
-
-- Swift 6.4+
-- macOS 27+, iOS 27+, tvOS 27+, watchOS 27+
-
-## License
-
-Apache 2.0
+- Parsing trims leading and trailing spaces and tabs, and lowercases the scheme.
+- A special scheme (`http`, `https`, `ws`, `wss`, `ftp`, `file`) must be followed by `//`. `http:example.com` is refused.
+- With a base URL, empty input gives the base itself. A relative path replaces the base's last segment, `?query` keeps the base path, and `#fragment` keeps the base path and query.
+- A port equal to the scheme's default is dropped while parsing, so `http://example.com:80/` has no port. Serialization also leaves out a default port set by hand. A port above 65535 is refused.
+- Under a special scheme the host is an IPv4 address when it reads as one, in any WHATWG form (hex `0xC0`, octal `0300`, or fewer than four parts as in `192.168.257`), and otherwise must be a valid `Domain`. Under any other scheme the host is kept as an opaque string, unvalidated. An empty host, as in `file:///path`, is `WHATWG_URL.URL.Host.empty`.
+- A bracketed IPv6 host has any zone ID after `%` dropped, and serializes in RFC 5952 form, as in `[2001:db8::1]`.
+- Path segments are percent-decoded when parsed and stored decoded. `.` segments are removed, `..` removes the previous segment and does nothing at the root, and empty segments are dropped, so `http://example.com/` has an empty path.
+- A second `@` in the authority is kept in the username as `%40`.
+- `WHATWG_URL.URL.origin` is `null` for a URL without a special scheme.
+- `WHATWG_URL.URL.Search.Params.set(_:_:)` removes every pair with that name and appends the new pair at the end.
+- Form encoding writes UTF-8 and leaves only ASCII letters, digits and `*-._` unescaped. Escapes use uppercase hex. A space becomes `+` with `WHATWG_Form_URL_Encoded.SpaceEncoding.plus` and `%20` with `WHATWG_Form_URL_Encoded.SpaceEncoding.percentEscaped`, and decoding reads `+` as a space only under `plus`.
+- Form decoding is strict: a `%` without two hex digits after it throws. `WHATWG_Form_URL_Encoded.parse(_:)` skips empty pieces between `&`, gives an empty value to a name without `=`, and silently drops any pair that fails to decode.
