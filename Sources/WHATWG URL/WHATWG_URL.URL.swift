@@ -11,6 +11,8 @@ extension WHATWG_URL {
 
         public var host: Host?
 
+        // swift-linter:disable:next raw concept
+        // REASON: The URL Standard defines a URL's port as null or a 16-bit unsigned integer, a field of its own URL record; looked at RFC_3986.URI.Port, RFC 3986's component, from a package swift-whatwg-url doesn't depend on.
         public var port: UInt16?
 
         public var path: Path
@@ -24,6 +26,8 @@ extension WHATWG_URL {
             username: String = "",
             password: String = "",
             host: Host? = nil,
+            // swift-linter:disable:next raw concept
+            // REASON: The URL Standard defines a URL's port as null or a 16-bit unsigned integer, a field of its own URL record; looked at RFC_3986.URI.Port, RFC 3986's component, from a package swift-whatwg-url doesn't depend on.
             port: UInt16? = nil,
             path: Path = .emptyList,
             query: String? = nil,
