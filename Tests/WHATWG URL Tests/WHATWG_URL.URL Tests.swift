@@ -10,7 +10,9 @@ struct `WHATWG_URL.URL Tests` {
     @Suite struct Unit {}
     @Suite struct `Edge Case` {}
     @Suite struct Integration {}
+}
 
+extension `WHATWG_URL.URL Tests` {
     @Suite
     struct `URL - Absolute URLs` {
         @Test

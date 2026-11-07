@@ -2,14 +2,18 @@ import Testing
 
 @testable import WHATWG_Form_URL_Encoded
 
-@Suite
-struct `README Verification` {
-    @Suite struct Unit {}
-    @Suite struct `Edge Case` {}
-    @Suite struct Integration {}
+enum `README Tests` {}
+
+extension `README Tests` {
+    @Suite
+    struct `README Verification` {
+        @Suite struct Unit {}
+        @Suite struct `Edge Case` {}
+        @Suite struct Integration {}
+    }
 }
 
-extension `README Verification`.Unit {
+extension `README Tests`.`README Verification`.Unit {
     @Test
     func `Example from source: Serialize to application/x-www-form-urlencoded`() throws {
         let encoded = WHATWG_Form_URL_Encoded.serialize([
@@ -149,7 +153,7 @@ extension `README Verification`.Unit {
     }
 }
 
-extension `README Verification`.`Edge Case` {
+extension `README Tests`.`README Verification`.`Edge Case` {
     @Test
     func `Parse: Empty values`() throws {
         let pairs = WHATWG_Form_URL_Encoded.parse("name=&email=test%40example.com")
@@ -229,7 +233,7 @@ extension `README Verification`.`Edge Case` {
     }
 }
 
-extension `README Verification`.Integration {
+extension `README Tests`.`README Verification`.Integration {
     @Test
     func `Round trip: Serialize and parse`() throws {
         let original = [
