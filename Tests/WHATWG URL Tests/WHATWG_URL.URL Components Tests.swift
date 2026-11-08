@@ -5,7 +5,7 @@ import Testing
 @testable import WHATWG_URL
 
 extension `WHATWG_URL.URL Tests` {
-    @Suite("WHATWG URL Components")
+    @Suite
     struct Test {
 
         @Test
