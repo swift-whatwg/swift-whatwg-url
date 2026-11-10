@@ -16,3 +16,20 @@ struct `WHATWG_Form_URL_Encoded Tests` {
         )
     }
 }
+
+extension `WHATWG_Form_URL_Encoded Tests` {
+
+    @Test
+    func `a pair with a bad percent escape is kept with the escape as written`() {
+        let pairs = WHATWG_Form_URL_Encoded.parse("q=%zz&a%=b%2&c=%41")
+        #expect(pairs.map(\.0) == ["q", "a%", "c"])
+        #expect(pairs.map(\.1) == ["%zz", "b%2", "A"])
+    }
+
+    @Test
+    func `a pair without an equals sign is kept with an empty value`() {
+        let pairs = WHATWG_Form_URL_Encoded.parse("x&y=1")
+        #expect(pairs.map(\.0) == ["x", "y"])
+        #expect(pairs.map(\.1) == ["", "1"])
+    }
+}

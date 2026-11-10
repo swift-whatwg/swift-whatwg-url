@@ -15,4 +15,4 @@ Use this package when you need to parse, resolve and serialize URLs following th
 - `WHATWG_URL.URL.origin` is `null` for a URL without a special scheme.
 - `WHATWG_URL.URL.Search.Params.set(_:_:)` removes every pair with that name and appends the new pair at the end.
 - Form encoding writes UTF-8 and leaves only ASCII letters, digits and `*-._` unescaped. Escapes use uppercase hex. A space becomes `+` with `WHATWG_Form_URL_Encoded.SpaceEncoding.plus` and `%20` with `WHATWG_Form_URL_Encoded.SpaceEncoding.percentEscaped`, and decoding reads `+` as a space only under `plus`.
-- Form decoding is strict: a `%` without two hex digits after it throws. `WHATWG_Form_URL_Encoded.parse(_:)` skips empty pieces between `&`, gives an empty value to a name without `=`, and silently drops any pair that fails to decode.
+- `WHATWG_Form_URL_Encoded.PercentEncoding.decode(_:space:)` is strict: a `%` without two hex digits after it throws. `WHATWG_Form_URL_Encoded.parse(_:)` follows the WHATWG rules instead: it skips empty pieces between `&`, gives an empty value to a name without `=`, and keeps a `%` without two hex digits after it as written, so `q=%zz` gives the value `%zz`.

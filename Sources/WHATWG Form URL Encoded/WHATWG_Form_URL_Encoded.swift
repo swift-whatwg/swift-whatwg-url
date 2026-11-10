@@ -33,13 +33,10 @@ extension WHATWG_Form_URL_Encoded {
                 let name = String(components[0])
                 let value = components.count > 1 ? String(components[1]) : ""
 
-                guard let decodedName = PercentEncoding.decodeOrNil(name, space: .plus),
-                    let decodedValue = PercentEncoding.decodeOrNil(value, space: .plus)
-                else {
-                    return nil
-                }
-
-                return (decodedName, decodedValue)
+                return (
+                    PercentEncoding.decode(keepingInvalidEscapes: name, space: .plus),
+                    PercentEncoding.decode(keepingInvalidEscapes: value, space: .plus)
+                )
             }
     }
 }

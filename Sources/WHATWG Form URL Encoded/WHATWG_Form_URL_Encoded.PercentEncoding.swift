@@ -105,3 +105,38 @@ extension WHATWG_Form_URL_Encoded.PercentEncoding {
         }
     }
 }
+
+extension WHATWG_Form_URL_Encoded.PercentEncoding {
+
+    public static func decode(
+        keepingInvalidEscapes string: String,
+        space: WHATWG_Form_URL_Encoded.SpaceEncoding = .plus
+    ) -> String {
+        let input = [Byte](utf8: string)
+        var bytes: [Byte] = []
+        bytes.reserveCapacity(input.count)
+        var index = 0
+
+        while index < input.count {
+            let byte = input[index]
+
+            if byte == ASCII.Code.plusSign.byte && space == .plus {
+                bytes.append(ASCII.Code.sp.byte)
+                index += 1
+            } else if byte == ASCII.Code.percentSign.byte,
+                index + 2 < input.count,
+                ASCII.Code(unchecked: input[index + 1]).isHexDigit,
+                ASCII.Code(unchecked: input[index + 2]).isHexDigit,
+                let decoded = UInt8(String(decoding: Array(input[(index + 1)...(index + 2)]), as: UTF8.self), radix: 16)
+            {
+                bytes.append(Byte(bitPattern: decoded))
+                index += 3
+            } else {
+                bytes.append(byte)
+                index += 1
+            }
+        }
+
+        return String(decoding: bytes, as: UTF8.self)
+    }
+}
