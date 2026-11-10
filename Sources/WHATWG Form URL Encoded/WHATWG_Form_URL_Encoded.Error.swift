@@ -4,10 +4,6 @@ extension WHATWG_Form_URL_Encoded.PercentEncoding {
 
         case invalidPercentEncoding(position: Int, found: String)
 
-        case invalidHexDigit(Character)
-
-        case invalidUTF8Sequence
-
         case unexpectedEndOfInput
     }
 }

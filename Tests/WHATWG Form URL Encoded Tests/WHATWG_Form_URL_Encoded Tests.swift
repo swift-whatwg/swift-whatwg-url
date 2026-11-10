@@ -33,3 +33,12 @@ extension `WHATWG_Form_URL_Encoded Tests` {
         #expect(pairs.map(\.1) == ["", "1"])
     }
 }
+
+extension `WHATWG_Form_URL_Encoded Tests` {
+
+    @Test
+    func `a percent-encoded byte that is not UTF-8 decodes to the replacement character`() throws {
+        #expect(try WHATWG_Form_URL_Encoded.PercentEncoding.decode("a%FFb") == "a\u{FFFD}b")
+        #expect(WHATWG_Form_URL_Encoded.parse("q=%C3").map(\.1) == ["\u{FFFD}"])
+    }
+}
