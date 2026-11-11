@@ -29,14 +29,14 @@ extension WHATWG_URL.PercentEncoding {
             if chars[i] == "%", i + 2 < chars.count {
 
                 let hex = String(chars[i + 1...i + 2])
-                if hex.allSatisfy(\.isHexDigit), let byte = UInt8(hex, radix: 16) {
+                if hex.allSatisfy({ $0.isHexDigit }), let byte = UInt8(hex, radix: 16) {
 
                     var bytes: [Byte] = [Byte(bitPattern: byte)]
                     i += 3
 
                     while i < chars.count && chars[i] == "%", i + 2 < chars.count {
                         let nextHex = String(chars[i + 1...i + 2])
-                        guard nextHex.allSatisfy(\.isHexDigit), let nextByte = UInt8(nextHex, radix: 16) else {
+                        guard nextHex.allSatisfy({ $0.isHexDigit }), let nextByte = UInt8(nextHex, radix: 16) else {
                             break
                         }
                         bytes.append(Byte(bitPattern: nextByte))
@@ -45,7 +45,7 @@ extension WHATWG_URL.PercentEncoding {
 
                     let decoded = String(decoding: bytes, as: UTF8.self)
 
-                    if decoded.utf8.elementsEqual(bytes.lazy.map(\.bitPattern)) {
+                    if decoded.utf8.elementsEqual(bytes.lazy.map({ $0.bitPattern })) {
                         result += decoded
                     } else {
 
